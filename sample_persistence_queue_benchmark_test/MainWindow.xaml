@@ -1,0 +1,13 @@
+﻿<Window x:Class="sample_persistence_queue_benchmark_test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sample_persistence_queue_benchmark_test"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Closing="MainWindow_OnClosing">
+    <DockPanel>
+        <Button DockPanel.Dock="Top" Content="Redis" Click="OnBtnRedis"/>
+        <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Visibility="{Binding ProgressVisible}" />
+    </DockPanel>
+</Window>
