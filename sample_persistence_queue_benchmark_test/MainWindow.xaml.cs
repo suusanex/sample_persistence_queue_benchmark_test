@@ -130,5 +130,33 @@ namespace sample_persistence_queue_benchmark_test
             m_Bind.ProgressVisible = Visibility.Visible;
 
         }
+
+        SQLite m_SQLite = new SQLite();
+
+        private void OnBtnSQLite(object sender, RoutedEventArgs e)
+        {
+
+            var test = new BenchMarkTest(m_SQLite);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("SQLite Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("SQLite Test End");
+                }));
+            };
+
+            _trace.Warn("SQLite Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+
+        }
     }
 }

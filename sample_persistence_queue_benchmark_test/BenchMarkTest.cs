@@ -115,19 +115,29 @@ namespace sample_persistence_queue_benchmark_test
             }
         }
 
-        private void PopTimeout(object isLast)
+        private void PopTimeout(object state)
         {
             int count = (int)Math.Ceiling(ServerSendTime.TotalMilliseconds / PushInterval.TotalMilliseconds);
-            var records = m_Target.PopRecords(count).ToArray();
 
-            _trace.Trace($"Poped, {string.Join(", ", records)}");
-            Thread.Sleep(ServerSendTime);
+            string[] records;
 
-            if (!IsSuccessServerSend)
+            do
             {
-                m_Target.RevertPopRecords();
-            }
-            
+                records = m_Target.PopRecords(count).ToArray();
+                if (!records.Any())
+                {
+                    break;
+                }
+
+                _trace.Trace($"Poped, {string.Join(", ", records)}");
+                Thread.Sleep(ServerSendTime);
+
+                if (!IsSuccessServerSend)
+                {
+                    m_Target.RevertPopRecords();
+                }
+            } while (records.Any());
+
 
         }
 
