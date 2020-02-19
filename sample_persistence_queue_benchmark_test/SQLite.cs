@@ -2,21 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using sample_persistence_queue_benchmark_test.EF;
+using NLog;
 
 namespace sample_persistence_queue_benchmark_test
 {
     public class SQLite : IBenchMarkTarget
     {
+        private readonly Logger _trace = LogManager.GetCurrentClassLogger();
         public void Initialize()
         {
-            using (var db = new EFDBContext())
+            while (true)
             {
-                db.DBItems.RemoveRange(db.DBItems);
+                try
+                {
+                    using (var db = new EFDBContext())
+                    {
+                        db.DBItems.RemoveRange(db.DBItems);
 
-                db.SaveChanges();
+                        db.SaveChanges();
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    _trace.Warn("DbUpdateConcurrencyException");
+                    continue;
+                }
+
+                break;
             }
+
 
 
         }
@@ -36,19 +53,30 @@ namespace sample_persistence_queue_benchmark_test
 
         public IEnumerable<string> PopRecords(int count)
         {
-            using (var db = new EFDBContext())
+            while (true)
             {
-                var records = db.DBItems.OrderBy(d => d.id).Take(count);
+                try
+                {
+                    using (var db = new EFDBContext())
+                    {
+                        var records = db.DBItems.OrderBy(d => d.id).Take(count);
 
-                var returnBuf = records.Select(d => d.data).ToArray();
+                        var returnBuf = records.Select(d => d.data).ToArray();
 
-                db.DBItems.RemoveRange(records);
+                        db.DBItems.RemoveRange(records);
 
-                m_LastPopRecords = records.ToArray();
+                        m_LastPopRecords = records.ToArray();
 
-                db.SaveChanges();
+                        db.SaveChanges();
 
-                return returnBuf;
+                        return returnBuf;
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    _trace.Warn("DbUpdateConcurrencyException");
+                    continue;
+                }
             }
 
 
@@ -61,18 +89,39 @@ namespace sample_persistence_queue_benchmark_test
                 return;
             }
 
-            using (var db = new EFDBContext())
+            while (true)
             {
-                //TODO:push-front相当処理の実現方式を検討中
-                db.DBItems.AddRange(m_LastPopRecords);
-                m_LastPopRecords = null;
+                try
+                {
+                    using (var db = new EFDBContext())
+                    {
+                        //TODO:push-front相当処理の実現方式を検討中
+                        db.DBItems.AddRange(m_LastPopRecords);
+                        m_LastPopRecords = null;
 
-                db.SaveChanges();
+                        db.SaveChanges();
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    _trace.Warn("DbUpdateConcurrencyException");
+                    continue;
+                }
+
+                break;
             }
         }
 
-        public long UseStorageSize { get; }
-        public long UseMemorySize { get; }
+        public long UseStorageSize
+        {
+            get
+            {
+                var fileInfos = new[] { new FileInfo("SQLite.db") };
+                var fileSizes = fileInfos.Select(d => d.Exists ? d.Length : 0);
+                return fileSizes.Sum();
+            }
+        }
+        public long UseMemorySize => Environment.WorkingSet;
 
     }
 }
