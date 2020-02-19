@@ -28,8 +28,9 @@ namespace sample_persistence_queue_benchmark_test
         //TODO:使用するディスクサイズ
 
 
-        private Timer m_PushTimer;
+        private Thread m_PushTimer;
         private int m_PushRecentCount = 0;
+        bool m_PushTimerIsContinue;
 
 
         private Timer m_PopTimer;
@@ -82,7 +83,17 @@ namespace sample_persistence_queue_benchmark_test
             TestPopAllTime = new Stopwatch();
             TestPopAllTime.Start();
 
-            m_PushTimer = new Timer(PushTimeout, null, TimeSpan.Zero, PushInterval);
+            m_PushTimerIsContinue = true;
+            m_PushTimer = new Thread(()=>
+            {
+                while (m_PushTimerIsContinue)
+                {
+                    WaitWithoutSleep(PushInterval);
+                    PushTimeout(null);
+                                       
+                }
+            });
+            m_PushTimer.Start();
             m_PopTimer = new Timer(PopTimeout, null, TimeSpan.Zero, PopInterval);
 
             m_CheckTimer_FileSize = new Timer(CheckTimeout_FileSize, null, TimeSpan.Zero, CheckInterval_FileSize);
@@ -90,6 +101,20 @@ namespace sample_persistence_queue_benchmark_test
 
 
             _trace.Trace("Push Start");
+        }
+
+        /// <summary>
+        /// 1スレッドを占有して可能な限り正確なWaitを行う
+        /// </summary>
+        /// <param name="waitTime"></param>
+        void WaitWithoutSleep(TimeSpan waitTime)
+        {
+            var watch = new Stopwatch();
+            watch.Start();
+            while(watch.ElapsedTicks < waitTime.Ticks)
+            {
+                ;
+            }
         }
 
         private long MaxMemorySize;
@@ -164,14 +189,13 @@ namespace sample_persistence_queue_benchmark_test
             {
                 _trace.Trace("Push End");
 
-                m_PushTimer.Change(-1, -1);
+                m_PushTimerIsContinue = false;
                 m_PopTimer.Change(-1, -1);
 
                 Task.Run(() =>
                 {
                     _trace.Trace("Complete Thread Start");
                     TestPushAllTime.Stop();
-                    m_PushTimer.Dispose();
                     m_PushTimer = null;
                     m_PopTimer.Dispose();
                     m_PopTimer = null;

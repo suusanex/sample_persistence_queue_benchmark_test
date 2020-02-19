@@ -158,5 +158,32 @@ namespace sample_persistence_queue_benchmark_test
             m_Bind.ProgressVisible = Visibility.Visible;
 
         }
+
+        Empty m_Empty = new Empty();
+
+        private void OnBtnEmpty(object sender, RoutedEventArgs e)
+        {
+            var test = new BenchMarkTest(m_Empty);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("Empty Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("Empty Test End");
+                }));
+            };
+
+            _trace.Warn("Empty Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+
+        }
     }
 }
