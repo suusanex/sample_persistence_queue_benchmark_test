@@ -160,6 +160,7 @@ namespace sample_persistence_queue_benchmark_test
                 if (!IsSuccessServerSend)
                 {
                     m_Target.RevertPopRecords();
+                    break;
                 }
             } while (records.Any());
 
