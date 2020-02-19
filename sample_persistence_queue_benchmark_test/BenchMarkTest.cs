@@ -36,21 +36,21 @@ namespace sample_persistence_queue_benchmark_test
 
 
         //Insertを10msごとに10000回くらい実行
-        readonly TimeSpan PushInterval = new TimeSpan(0, 0, 0, 0, 10);
-        private readonly int PushMaxCount = 10000;
+        private readonly TimeSpan PushInterval = TimeSpan.Parse(App.Config["PushInterval"]);
+        private readonly int PushMaxCount = int.Parse(App.Config["PushMaxCount"]);
 
         //複数データのGet＆Deleteを10秒ごとに実行開始（「複数データ」の範囲は方式によって違う）
-        readonly TimeSpan PopInterval = new TimeSpan(0, 0, 10);
+        readonly TimeSpan PopInterval = TimeSpan.Parse(App.Config["PopInterval"]);
 
         /// <summary>
         /// サーバー送信が成功するかどうかを決める値。変更すると、すぐに次の通信結果に反映される。
         /// </summary>
-        public bool IsSuccessServerSend { get; set; } = false;
+        public bool IsSuccessServerSend { get; set; } = bool.Parse(App.Config["IsSuccessServerSend"]);
 
         /// <summary>
         /// サーバー送信に要する時間をイメージした値
         /// </summary>
-        readonly TimeSpan ServerSendTime = new TimeSpan(0, 0, 0, 0, 100);
+        readonly TimeSpan ServerSendTime = TimeSpan.Parse(App.Config["ServerSendTime"]);
 
         private readonly Logger _trace = LogManager.GetCurrentClassLogger();
         private IBenchMarkTarget m_Target;
@@ -69,6 +69,13 @@ namespace sample_persistence_queue_benchmark_test
 
             m_Target.Initialize();
             _trace.Trace("Initialized");
+
+
+            _trace.Warn($"{nameof(PushInterval)}={PushInterval}");
+            _trace.Warn($"{nameof(PushMaxCount)}={PushMaxCount}");
+            _trace.Warn($"{nameof(PopInterval)}={PopInterval}");
+            _trace.Warn($"{nameof(IsSuccessServerSend)}={IsSuccessServerSend}");
+            _trace.Warn($"{nameof(ServerSendTime)}={ServerSendTime}");
 
             TestPushAllTime = new Stopwatch();
             TestPushAllTime.Start();

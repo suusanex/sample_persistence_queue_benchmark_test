@@ -1,3 +1,8 @@
 {
-  "RedisInstallFolderPath": "D:\\Tools\\Development\\Redis"
+  "RedisInstallFolderPath": "D:\\Tools\\Development\\Redis",
+  "IsSuccessServerSend": "true",
+  "PopInterval": "00:00:10",
+  "PushInterval": "00:00:00.0100000",
+  "PushMaxCount": "10000",
+  "ServerSendTime": "00:00:00.1000000"
 }
