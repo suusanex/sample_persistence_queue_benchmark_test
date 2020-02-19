@@ -8,6 +8,7 @@
         Title="MainWindow" Height="450" Width="800" Closing="MainWindow_OnClosing">
     <DockPanel>
         <Button DockPanel.Dock="Top" Content="Redis" Click="OnBtnRedis"/>
+        <Button DockPanel.Dock="Top" Content="Binary" Click="OnBtnBinary"/>
         <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Visibility="{Binding ProgressVisible}" />
     </DockPanel>
 </Window>

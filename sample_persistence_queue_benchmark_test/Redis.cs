@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text;
 using StackExchange.Redis;
 
 namespace sample_persistence_queue_benchmark_test
 {
 
-    public class Redis : IDisposable
+    public class Redis : IDisposable, IBenchMarkTarget
     {
         private ConnectionMultiplexer _m_Controller;
 
@@ -14,11 +17,17 @@ namespace sample_persistence_queue_benchmark_test
         {
         }
 
-        private ConnectionMultiplexer Controller => _m_Controller ?? (_m_Controller = ConnectionMultiplexer.Connect("localhost"));
+        private ConnectionMultiplexer Controller => _m_Controller ?? (_m_Controller = ConnectionMultiplexer.Connect(_ServerUrl));
 
         private string QueueName = "RedisQueue";
 
-        
+
+        public void Initialize()
+        {
+            var db = Controller.GetDatabase();
+            db.KeyDelete(QueueName);
+        }
+
         public void PushRecord(string record)
         {
             var db = Controller.GetDatabase();
@@ -52,6 +61,7 @@ namespace sample_persistence_queue_benchmark_test
         }
 
         Stack<RedisValue> PopTransactionItems = new Stack<RedisValue>();
+        private string _ServerUrl = "localhost";
 
         public void RevertPopRecords()
         {
@@ -65,9 +75,30 @@ namespace sample_persistence_queue_benchmark_test
             
         }
 
+        private static readonly string RedisInstallFolderPath = App.Config["RedisInstallFolderPath"];
+        private string AOFFilePath => Path.Combine(RedisInstallFolderPath, "appendonly.aof");
+        private string RDBFilePath => Path.Combine(RedisInstallFolderPath, "dump.rdb");
+
+        public long UseStorageSize
+        {
+            get
+            {
+                var fileInfos = new[] { new FileInfo(AOFFilePath), new FileInfo(RDBFilePath) };
+                var fileSizes = fileInfos.Select(d => d.Exists ? d.Length : 0);
+                return fileSizes.Sum();
+            }
+        }
+
+        public long UseMemorySize => Environment.WorkingSet + m_RedisServerProcess.WorkingSet64;
+
+        private Process m_RedisServerProcess = Process.GetProcessesByName("redis-server").First();
+
         public void Dispose()
         {
+            m_RedisServerProcess?.Dispose();
+            m_RedisServerProcess = null;
             _m_Controller?.Dispose();
+            _m_Controller = null;
         }
     }
 }

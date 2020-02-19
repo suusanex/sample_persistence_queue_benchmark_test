@@ -73,10 +73,7 @@ namespace sample_persistence_queue_benchmark_test
         private void OnBtnRedis(object sender, RoutedEventArgs e)
         {
 
-            var test = new BenchMarkTest
-            {
-                RevertPopRecords = m_Redis.RevertPopRecords, PopRecords = m_Redis.PopRecords, PushRecord = m_Redis.PushRecord
-            };
+            var test = new BenchMarkTest(m_Redis);
 
             test.OnTestEnd += () =>
             {                
@@ -106,5 +103,32 @@ namespace sample_persistence_queue_benchmark_test
 
         private readonly Logger _trace = LogManager.GetCurrentClassLogger();
 
+        private BinaryFile m_BinaryFile = new BinaryFile();
+
+        private void OnBtnBinary(object sender, RoutedEventArgs e)
+        {
+
+            var test = new BenchMarkTest(m_BinaryFile);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("Binary Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("Binary Test End");
+                }));
+            };
+
+            _trace.Warn("Binary Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+
+        }
     }
 }
