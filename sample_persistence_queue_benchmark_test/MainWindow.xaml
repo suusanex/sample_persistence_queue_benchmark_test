@@ -10,6 +10,7 @@
         <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Redis" Click="OnBtnRedis"/>
         <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Binary" Click="OnBtnBinary"/>
         <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="SQLite" Click="OnBtnSQLite"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Kafka" Click="OnBtnKafka"/>
         <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Empty" Click="OnBtnEmpty"/>
         <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Visibility="{Binding ProgressVisible}" />
     </DockPanel>

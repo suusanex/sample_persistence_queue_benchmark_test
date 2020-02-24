@@ -185,5 +185,33 @@ namespace sample_persistence_queue_benchmark_test
             m_Bind.ProgressVisible = Visibility.Visible;
 
         }
+
+        Kafka m_Kafka = new Kafka();
+
+        private void OnBtnKafka(object sender, RoutedEventArgs e)
+        {
+
+            var test = new BenchMarkTest(m_Kafka);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("Kafka Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("Kafka Test End");
+                }));
+            };
+
+            _trace.Warn("Kafka Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+
+        }
     }
 }
