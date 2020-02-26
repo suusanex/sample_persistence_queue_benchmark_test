@@ -177,6 +177,10 @@ namespace sample_persistence_queue_benchmark_test
 
         }
 
+        public void CommitPopRecords()
+        {
+        }
+
         public long UseStorageSize
         {
             get
@@ -188,5 +192,6 @@ namespace sample_persistence_queue_benchmark_test
         }
 
         public long UseMemorySize => Environment.WorkingSet;
+        public long FinalStorageSize => UseStorageSize;
     }
 }

@@ -7,9 +7,15 @@ namespace sample_persistence_queue_benchmark_test
 {
     public class Empty : IBenchMarkTarget
     {
+        public void CommitPopRecords()
+        {
+            
+        }
+
         public long UseStorageSize => 0;
 
         public long UseMemorySize => Environment.WorkingSet;
+        public long FinalStorageSize => UseStorageSize;
 
         public void Initialize()
         {

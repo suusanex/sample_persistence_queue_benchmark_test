@@ -213,5 +213,60 @@ namespace sample_persistence_queue_benchmark_test
             m_Bind.ProgressVisible = Visibility.Visible;
 
         }
+
+
+        MongoDB m_MongoDB = new MongoDB();
+
+        private void OnBtnMongoDB(object sender, RoutedEventArgs e)
+        {
+            var test = new BenchMarkTest(m_MongoDB);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("MongoDB Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("MongoDB Test End");
+                }));
+            };
+
+            _trace.Warn("MongoDB Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+
+        }
+
+        private BinaryFileType2 m_BinaryType2File = new BinaryFileType2();
+
+        private void OnBtnBinaryType2(object sender, RoutedEventArgs e)
+        {
+
+            var test = new BenchMarkTest(m_BinaryType2File);
+
+            test.OnTestEnd += () =>
+            {
+                m_Tests.TryRemove(test, out _);
+                _trace.Warn("BinaryType2 Test End");
+
+                Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    m_Bind.ProgressVisible = Visibility.Hidden;
+                    MessageBox.Show("BinaryType2 Test End");
+                }));
+            };
+
+            _trace.Warn("BinaryType2 Test Start");
+            test.TestRunAsync();
+
+            m_Tests.TryAdd(test, test);
+
+            m_Bind.ProgressVisible = Visibility.Visible;
+        }
     }
 }

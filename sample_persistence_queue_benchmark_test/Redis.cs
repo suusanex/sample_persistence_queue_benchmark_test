@@ -90,8 +90,9 @@ namespace sample_persistence_queue_benchmark_test
         }
 
         public long UseMemorySize => Environment.WorkingSet + m_RedisServerProcess.WorkingSet64;
+        public long FinalStorageSize => UseStorageSize;
 
-        private Process m_RedisServerProcess = Process.GetProcessesByName("redis-server").First();
+        private Process m_RedisServerProcess = Process.GetProcessesByName("redis-server").FirstOrDefault();
 
         public void Dispose()
         {
@@ -99,6 +100,10 @@ namespace sample_persistence_queue_benchmark_test
             m_RedisServerProcess = null;
             _m_Controller?.Dispose();
             _m_Controller = null;
+        }
+
+        public void CommitPopRecords()
+        {
         }
     }
 }

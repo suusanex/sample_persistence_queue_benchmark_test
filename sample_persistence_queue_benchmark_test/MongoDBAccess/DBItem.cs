@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace sample_persistence_queue_benchmark_test.MongoDBAccess
+{
+    public class DBItem
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        public string Data { get; set; }
+    }
+}

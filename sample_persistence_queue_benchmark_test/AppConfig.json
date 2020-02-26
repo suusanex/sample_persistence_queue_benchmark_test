@@ -4,5 +4,11 @@
   "PopInterval": "00:00:10",
   "PushInterval": "00:00:00.0010000",
   "PushMaxCount": "10000",
-  "ServerSendTime": "00:00:00.1000000"
+  "ServerSendTime": "00:00:00.1000000",
+  "DBItemstoreDatabaseSettings": {
+    "DBItemsCollectionName": "QueueData",
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "QueueDb",
+    "FolderPath": "C:\\Program Files\\MongoDB\\Server\\4.2\\data"
+  }
 }

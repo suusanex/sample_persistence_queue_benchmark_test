@@ -63,11 +63,7 @@ namespace sample_persistence_queue_benchmark_test
 
                         var returnBuf = records.Select(d => d.data).ToArray();
 
-                        db.DBItems.RemoveRange(records);
-
                         m_LastPopRecords = records.ToArray();
-
-                        db.SaveChanges();
 
                         return returnBuf;
                     }
@@ -84,22 +80,32 @@ namespace sample_persistence_queue_benchmark_test
 
         public void RevertPopRecords()
         {
-            if (m_LastPopRecords == null)
-            {
-                return;
-            }
+            m_LastPopRecords = null;
 
+        }
+
+        public void CommitPopRecords()
+        {
             while (true)
             {
                 try
                 {
                     using (var db = new EFDBContext())
                     {
-                        //TODO:push-front相当処理の実現方式を検討中
-                        db.DBItems.AddRange(m_LastPopRecords);
-                        m_LastPopRecords = null;
+                        if (m_LastPopRecords == null)
+                        {
+                            return;
+                        }
+
+                        var records = m_LastPopRecords;
+
+                        db.DBItems.RemoveRange(records);
 
                         db.SaveChanges();
+
+                        m_LastPopRecords = null;
+
+                        return;
                     }
                 }
                 catch (DbUpdateConcurrencyException)
@@ -107,9 +113,8 @@ namespace sample_persistence_queue_benchmark_test
                     _trace.Warn("DbUpdateConcurrencyException");
                     continue;
                 }
-
-                break;
             }
+
         }
 
         public long UseStorageSize
@@ -122,6 +127,6 @@ namespace sample_persistence_queue_benchmark_test
             }
         }
         public long UseMemorySize => Environment.WorkingSet;
-
+        public long FinalStorageSize => UseStorageSize;
     }
 }

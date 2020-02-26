@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using sample_persistence_queue_benchmark_test.MongoDBAccess;
 
 namespace sample_persistence_queue_benchmark_test
 {

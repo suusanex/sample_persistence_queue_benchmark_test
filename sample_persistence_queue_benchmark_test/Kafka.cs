@@ -93,7 +93,13 @@ namespace sample_persistence_queue_benchmark_test
             throw new NotImplementedException();
         }
 
+        public void CommitPopRecords()
+        {
+            
+        }
+
         public long UseStorageSize { get; } = 0;
         public long UseMemorySize { get; } = 0;
+        public long FinalStorageSize => UseStorageSize;
     }
 }

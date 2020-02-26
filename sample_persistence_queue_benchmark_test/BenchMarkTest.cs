@@ -142,13 +142,13 @@ namespace sample_persistence_queue_benchmark_test
 
         private void PopTimeout(object state)
         {
-            int count = (int)Math.Ceiling(ServerSendTime.TotalMilliseconds / PushInterval.TotalMilliseconds);
+            int serverSendCount = 10;
+            int allCount = (int)Math.Ceiling(ServerSendTime.TotalMilliseconds / PushInterval.TotalMilliseconds);
+            var loopCount = Math.Ceiling((decimal) allCount / serverSendCount);
 
-            string[] records;
-
-            do
+            for (int i = 0; i < loopCount; i++)
             {
-                records = m_Target.PopRecords(count).ToArray();
+                string[] records = m_Target.PopRecords(serverSendCount).ToArray();
                 if (!records.Any())
                 {
                     break;
@@ -160,22 +160,34 @@ namespace sample_persistence_queue_benchmark_test
                 if (!IsSuccessServerSend)
                 {
                     m_Target.RevertPopRecords();
+                    _trace.Trace("Fail, Revert");
                     break;
                 }
-            } while (records.Any());
 
+                m_Target.CommitPopRecords();
+                _trace.Trace("Success, Commit");
+            }
 
         }
 
 
+        Random m_TestPathLengthRandom = new Random();
 
         private void PushTimeout(object state)
         {
+            var testPath = new StringBuilder();
+            {
+                var testLoopCount = m_TestPathLengthRandom.Next(1, 8);
+                for (int i = 0; i < testLoopCount; i++)
+                {
+                    testPath.Append(Guid.NewGuid().ToString("N"));
+                }
+            }
+
             var item = new QueueItem
             {
                 ItemTime = DateTimeOffset.Now,
-                Path =
-                    "TestPath0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
+                Path = testPath.ToString()
             };
 
             var str = JsonConvert.SerializeObject(item);
