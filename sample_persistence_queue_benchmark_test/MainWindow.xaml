@@ -1,0 +1,19 @@
+﻿<Window x:Class="sample_persistence_queue_benchmark_test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sample_persistence_queue_benchmark_test"
+        mc:Ignorable="d"
+        Title="MainWindow" SizeToContent="WidthAndHeight" MinWidth="400" Closing="MainWindow_OnClosing">
+    <DockPanel>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Redis" Click="OnBtnRedis"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Binary" Click="OnBtnBinary"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="BinaryType2" Click="OnBtnBinaryType2"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="SQLite" Click="OnBtnSQLite"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Kafka" Click="OnBtnKafka"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="MongoDB" Click="OnBtnMongoDB"/>
+        <Button DockPanel.Dock="Top" Margin="10" Height="50" Content="Empty" Click="OnBtnEmpty"/>
+        <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Visibility="{Binding ProgressVisible}" MinHeight="20" />
+    </DockPanel>
+</Window>
